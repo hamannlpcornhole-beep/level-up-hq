@@ -92,6 +92,9 @@
     const ord = m.orders.filter((o) => (!filt.coach || o.coach === filt.coach) && (!filt.plan || o.plan === filt.plan.replace("Free ", "")));
     const months = []; for (let i = 11; i >= 0; i--) { const d = new Date(t.getFullYear(), t.getMonth() - i, 1); months.push({ y: d.getFullYear(), m: d.getMonth(), label: d.toLocaleDateString("en-US", { month: "short" }), full: d.toLocaleDateString("en-US", { month: "long", year: "numeric" }), v: 0 }); }
     ord.forEach((o) => { const mm = months.find((x) => x.y === o.date.getFullYear() && x.m === o.date.getMonth()); if (mm) mm.v += o.net; });
+    // Month to date vs the same days of last month (a fair comparison mid-month).
+    const lm = months[10];
+    const lastMtd = ord.filter((o) => o.date.getFullYear() === lm.y && o.date.getMonth() === lm.m && o.date.getDate() <= t.getDate()).reduce((a, o) => a + o.net, 0);
     // new players per week (first order per email)
     const firstOrder = new Map(); [...m.orders].sort((a, b) => a.date - b.date).forEach((o) => { if (!firstOrder.has(o.email)) firstOrder.set(o.email, o); });
     const weeks = []; for (let i = 9; i >= 0; i--) { const s = new Date(t - (t.getDay() + 6) % 7 * D.DAY - i * 7 * D.DAY); weeks.push({ s, label: fdate(s), v: 0 }); }
@@ -99,7 +102,7 @@
     // active over last weeks (approx: paid through after each week end and start before)
     const activeTrend = weeks.map((w) => cl.filter((c) => c.paid && c.start && c.start <= new Date(w.s.getTime() + 6 * D.DAY) && c.paid >= w.s).length);
     const planMix = ["Pro", "Compete", "Elite", "Free Elite"].map((k) => ({ k, v: persons.filter((c) => c.planKey === k).length, color: PLAN_COLORS[k] }));
-    return { cl, act, persons, renew7, notLogged, months, weeks, activeTrend, planMix };
+    return { cl, act, persons, renew7, notLogged, months, weeks, activeTrend, planMix, lastMtd };
   }
   const rank = (k) => ({ Pro: 4, Compete: 3, Elite: 2, "Free Elite": 1 }[k] || 0);
 
@@ -116,12 +119,12 @@
     count($("#g-review"), m.review.length);
 
     // KPIs
-    const thisM = x.months[11].v, lastM = x.months[10].v;
+    const thisM = x.months[11].v, lastM = x.lastMtd;
     count($("#k-active"), x.persons.length);
     delta($("#k-active-d"), x.activeTrend[x.activeTrend.length - 1] - x.activeTrend[x.activeTrend.length - 2], "vs last week", true);
     C.spark($("#sp-active"), x.activeTrend);
     count($("#k-net"), thisM, true);
-    delta($("#k-net-d"), lastM ? Math.round(((thisM - lastM) / lastM) * 100) : null, `vs ${x.months[10].full.split(" ")[0]}`, false, "%");
+    delta($("#k-net-d"), lastM ? Math.round(((thisM - lastM) / lastM) * 100) : null, `vs same days of ${x.months[10].full.split(" ")[0]}`, false, "%");
     C.spark($("#sp-net"), x.months.slice(-6).map((mm) => mm.v));
     count($("#k-renew"), x.renew7.length);
     $("#k-renew-d").innerHTML = `${x.renew7.filter((c) => c.autoRenew).length} on auto-renew`;
