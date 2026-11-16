@@ -114,7 +114,7 @@
     $("#today").textContent = t.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
 
     // glance
-    $("#g-payday").textContent = m.nextPay ? usd(m.nextPay.total) : "—";
+    $("#g-payday").textContent = m.nextPay ? usd(m.nextPay.total) : "-";
     $("#g-payday-date").textContent = m.nextPay ? fdate(m.nextPay.date, { weekday: "short", month: "short", day: "numeric" }) : "No payday found";
     count($("#g-review"), m.review.length);
 
@@ -145,7 +145,7 @@
       $("#pay-total").textContent = usd(m.nextPay.total);
       const cs = m.nextPay.coaches.filter((c) => c.amount > 0 && (!filt.coach || c.coach === filt.coach)); const mx = Math.max(1, ...cs.map((c) => c.amount));
       $("#pay-coaches").innerHTML = cs.map((c, i) => `<li><span>${esc(c.coach)}</span><span class="track"><span class="fill" style="width:${(c.amount / mx) * 100}%;animation-delay:${i * 70}ms"></span></span><span>${usd(c.amount)}</span></li>`).join("") || '<li class="empty">Nothing owed</li>';
-    } else { $("#pay-total").textContent = "—"; $("#pay-coaches").innerHTML = '<li class="empty">No payday on the Payroll tab</li>'; }
+    } else { $("#pay-total").textContent = "-"; $("#pay-coaches").innerHTML = '<li class="empty">No payday on the Payroll tab</li>'; }
     $("#renew-list").innerHTML = x.renew7.slice(0, 8).map((c) => row(c.name, `${c.planKey}${c.coach ? " · " + c.coach : ""} · ${fdate(c.paid)}`, `<span class="days${c.daysLeft <= 2 ? " hot" : ""}">${c.daysLeft === 0 ? "Today" : c.daysLeft + "d"}</span>`, c.email)).join("") || '<li class="empty">Nobody renews this week</li>';
 
     renderBoards(x); renderCoaches(x); renderFix(x);
@@ -238,7 +238,7 @@
     const rows = model.clients.filter((c) => c.email === email); if (!rows.length) return null;
     const c = rows.find((r) => r.active) || rows[0]; const p = model.portal.get(email);
     const ob = model.onboard.find((o) => o.email === email);
-    const dl = [["Plan", c.planKey], ["Coach", c.coachFull || "None"], ["Status", c.status], ["Paid through", fdate(c.paid, { month: "short", day: "numeric", year: "numeric" })], ["Days left", c.daysLeft ?? "—"], ["Auto-renew", c.autoRenew ? "Yes" : "No"]];
+    const dl = [["Plan", c.planKey], ["Coach", c.coachFull || "None"], ["Status", c.status], ["Paid through", fdate(c.paid, { month: "short", day: "numeric", year: "numeric" })], ["Days left", c.daysLeft ?? "-"], ["Auto-renew", c.autoRenew ? "Yes" : "No"]];
     if (p) dl.push(["Logged in", p.loggedIn ? "Yes" : "No"], ["Last session", p.lastSession ? fdate(p.lastSession) : "None yet"]);
     if (ob) dl.push(["Onboarding", ob.done + " of 5"]);
     return `<h4>${esc(c.name)}</h4><dl>${dl.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join("")}</dl>`;
