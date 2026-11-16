@@ -140,9 +140,10 @@
     }
     const orders = [["Order #", "Date", "Email", "Name", "Category", "Plan", "Item", "Coach", "Months", "Gross $", "Refunded $", "Shopify Fee $", "Fee Source", "Net $", "Status", "Product ID"]];
     for (let i = 0; i < 420; i++) {
-      const d = new Date(now - Math.floor(rnd() * 360) * DAY);
+      const fresh = i >= 360; // last 60 orders: first-time buyers in the last 10 weeks
+      const d = new Date(now - Math.floor(rnd() * (fresh ? 70 : 360)) * DAY);
       const plan = pick(["Pro", "Pro", "Elite", "Elite", "Compete"]); const g = plan === "Pro" ? 100 : plan === "Compete" ? 45 : 20;
-      orders.push([`#S${1000 + i}`, fmt(d), `sample${i % 74}@example.com`, "Sample", "Plan", plan, plan, plan === "Elite" ? "" : pick(coaches), "1", `$${g}`, "$0", `$${(g * .029 + .3).toFixed(2)}`, "Sample", `$${(g * .971 - .3).toFixed(2)}`, "Counted", ""]);
+      orders.push([`#S${1000 + i}`, fmt(d), fresh ? `new${i}@example.com` : `sample${i % 74}@example.com`, "Sample", "Plan", plan, plan, plan === "Elite" ? "" : pick(coaches), "1", `$${g}`, "$0", `$${(g * .029 + .3).toFixed(2)}`, "Sample", `$${(g * .971 - .3).toFixed(2)}`, "Counted", ""]);
     }
     const review = [["ID", "Date Flagged", "Player", "Email", "Where", "Issue Type", "Details", "Assigned To", "Next Action", "Status", "Resolved Date", "Resolution Notes"]];
     ["Missing contact info", "Missing contact info", "Status unclear", "Uncertain coach", "Missing contact info", "Unmatched buyer", "Status unclear", "Missing contact info"].forEach((t, i) =>
