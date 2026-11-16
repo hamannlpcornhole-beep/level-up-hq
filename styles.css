@@ -248,3 +248,6 @@ kbd { font: 600 11px/1 var(--font-b); padding: 3px 6px; border: 1px solid var(--
   .foot .keys { display: none; }
   .brand-name { font-size: 20px; }
 }
+.rows li.more { padding-top: 10px; font-size: 12px; font-weight: 600; }
+.rows li.more a { color: var(--accent); text-decoration: none; }
+.rows li.more a:hover { text-decoration: underline; }

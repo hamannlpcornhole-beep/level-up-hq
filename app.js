@@ -146,7 +146,7 @@
       const cs = m.nextPay.coaches.filter((c) => c.amount > 0 && (!filt.coach || c.coach === filt.coach)); const mx = Math.max(1, ...cs.map((c) => c.amount));
       $("#pay-coaches").innerHTML = cs.map((c, i) => `<li><span>${esc(c.coach)}</span><span class="track"><span class="fill" style="width:${(c.amount / mx) * 100}%;animation-delay:${i * 70}ms"></span></span><span>${usd(c.amount)}</span></li>`).join("") || '<li class="empty">Nothing owed</li>';
     } else { $("#pay-total").textContent = "-"; $("#pay-coaches").innerHTML = '<li class="empty">No payday on the Payroll tab</li>'; }
-    $("#renew-list").innerHTML = x.renew7.slice(0, 8).map((c) => row(c.name, `${c.planKey}${c.coach ? " · " + c.coach : ""} · ${fdate(c.paid)}`, `<span class="days${c.daysLeft <= 2 ? " hot" : ""}">${c.daysLeft === 0 ? "Today" : c.daysLeft + "d"}</span>`, c.email)).join("") || '<li class="empty">Nobody renews this week</li>';
+    $("#renew-list").innerHTML = x.renew7.slice(0, 5).map((c) => row(c.name, `${c.planKey}${c.coach ? " · " + c.coach : ""} · ${fdate(c.paid)}`, `<span class="days${c.daysLeft <= 2 ? " hot" : ""}">${c.daysLeft === 0 ? "Today" : c.daysLeft + "d"}</span>`, c.email)).join("") + (x.renew7.length > 5 ? `<li class="more"><a href="#s-boards">+${x.renew7.length - 5} more on the Renewals board</a></li>` : "") || '<li class="empty">Nobody renews this week</li>';
 
     renderBoards(x); renderCoaches(x); renderFix(x);
     wireHover();
